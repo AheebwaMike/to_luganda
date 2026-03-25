@@ -2,8 +2,8 @@ from deep_translator import GoogleTranslator
 from tqdm import tqdm
 import time
 
-INPUT_FILE_PATH = r'general_phrases_1.txt'
-OUTPUT_FILE_PATH = r'general_phrases_1_translated.txt'
+INPUT_FILE_PATH = r'general_phrases_2.txt'
+OUTPUT_FILE_PATH = r'general_phrases_2_translated.txt'
 START = 0
 
 translator = GoogleTranslator(source='auto', target='lg')
