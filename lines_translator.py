@@ -2,11 +2,8 @@ from deep_translator import GoogleTranslator
 from tqdm import tqdm
 import time
 
-# INPUT_FILE_PATH = r'..\nmt_data\text\in_prep\general\eng_sentences.txt'
-# OUTPUT_FILE_PATH = r'..\nmt_data\text\in_prep\general\eng_sentences_translated.txt'
-
-INPUT_FILE_PATH = r'..\nmt_data\text\in_prep\business\from_pdfs\freakonomics.txt'
-OUTPUT_FILE_PATH = r'..\nmt_data\text\in_prep\business\from_pdfs\freakonomics_translated.txt'
+INPUT_FILE_PATH = r'general_phrases_1.txt'
+OUTPUT_FILE_PATH = r'general_phrases_1_translated.txt'
 START = 0
 
 translator = GoogleTranslator(source='auto', target='lg')
