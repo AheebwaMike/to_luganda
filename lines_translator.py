@@ -1,13 +1,15 @@
 from deep_translator import GoogleTranslator
 from tqdm import tqdm
 import time
+import os
 
+os.makedirs('translated', exist_ok=True)
 INPUT_FILE_PATH = r'general_phrases_2.txt'
-OUTPUT_FILE_PATH = r'general_phrases_2_translated.txt'
+OUTPUT_FILE_PATH = r'translated\general_phrases_2_translated.txt'
 START = 0
+name = 'file 2'
 
 translator = GoogleTranslator(source='auto', target='lg')
-
 
 # 1. Read input
 with open(INPUT_FILE_PATH, 'r', encoding='utf-8') as file:
@@ -19,7 +21,7 @@ batch_size = 30  # Number of phrases per request (adjust based on phrase length)
 # 2. Translate in batches
 # the total number of batches that we can do at a single step is almost infinite and does not bring upt h
 try:
-    for i in tqdm(range(0, len(phrases), batch_size), desc='Translating batches'):
+    for i in tqdm(range(0, len(phrases), batch_size), desc=f'Translating batches: {name}'):
         batch = phrases[i:i + batch_size]
         
         translations = translator.translate_batch(batch)
