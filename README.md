@@ -1,119 +1,131 @@
 # Luganda Batch Processor
 Powered by *Google Translate*
 
-A Python script that translates text files in batches using Google Translate, with built-in resume capability and rate limiting to avoid IP blocks.
+A Python script that batch-translates text files from English (auto-detected) to Luganda using Google Translate, with resume support and rate limiting to avoid IP blocking.
 
-## Features
+## Requirements
 
-- **Batch Translation**: Translates phrases in configurable batches for efficiency
-- **Resume Support**: Automatically resumes from where it left off if interrupted
-- **Rate Limiting**: Built-in delays to prevent IP blocking by Google Translate
-- **Progress Tracking**: Visual progress bars using `tqdm`
-- **Luganda Support**: Default target language is Luganda (can be modified)
-- **Error Handling**: Gracefully handles errors and saves progress
+- Python 3.7 or higher
+- Internet connection (for Google Translate API)
 
-## Prerequisites
+All dependencies are listed in `requirements.txt`:
 
-- Python 3.6+
-- Required packages:
-  ```bash
-  pip install deep-translator tqdm
-  ```
+- `deep-translator`
+- `tqdm`
+
+## Installation & Setup
+
+1. Clone or download this repository to your local machine.
+
+2. Create and activate a virtual environment (recommended):
+
+   **On Windows:**
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+
+   **On macOS/Linux:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## File Structure
 
 ```
-project/
-├── split_files/
-│   ├── general_phrases_{ID}.txt      # Input files
-│   └── translated/                    # Output directory
-│       └── general_phrases_{ID}_translated.txt
-└── translate.py                       # This script
+project_root/
+│
+├── raw_files/                    # Place your input files here
+│   └── general_phrases_1.txt    # Example input file
+│
+├── translated_files/             # Translated output files will be saved here
+│   └── general_phrases_1_translated.txt
+│
+├── translator.py                 # Main script
+├── requirements.txt              # Python dependencies
+└── README.md                     # This file
+```
+
+## Input File Format
+
+Place your input files in the `raw_files/` folder using this naming convention:
+
+`general_phrases_{ID}.txt`
+
+Where `{ID}` is any unique identifier (number, text, etc.)
+
+Each line in the input file should contain one phrase to translate. Empty lines are automatically skipped.
+
+**Example** (`raw_files/general_phrases_1.txt`):
+```
+Hello, how are you?
+Good morning
+Thank you very much
 ```
 
 ## Usage
 
+Run the script from the command line, providing the ID of the file you want to translate:
+
 ```bash
-python translate.py <ID>
+python translator.py [ID]
 ```
 
-Where `<ID>` is the identifier of the file to translate.
-
-### Example
-
+**Examples:**
 ```bash
-python translate.py 001
+python translator.py 1
+python translator.py project_a
+python translator.py test_001
 ```
 
 This will:
-- Read from: `split_files/general_phrases_001.txt`
-- Write to: `split_files/translated/general_phrases_001_translated.txt`
+- Read from: `raw_files/general_phrases_1.txt`
+- Write to:   `translated_files/general_phrases_1_translated.txt`
 
-## Input File Format
+## Features
 
-Each input file should contain one phrase per line:
+- **Auto-resume**: If translation is interrupted, the script will pick up where it left off (skips already translated lines)
+- **Batch processing**: Translates 30 phrases at a time for efficiency
+- **Rate limiting**: 0.5 second delay between batches to avoid IP blocking
+- **Progress bar**: Shows real-time translation progress using `tqdm`
+- **Error handling**: Continues to save progress even if an error occurs
+- **Tab-separated output**: Original and translated phrases are separated by tabs
+
+## Output Format
+
+The translated file contains tab-separated values:
+
 ```
-Hello world
-How are you?
-Good morning
+Original phrase 1    Translated phrase 1
+Original phrase 2    Translated phrase 2
+Original phrase 3    Translated phrase 3
 ```
-
-## Output File Format
-
-Output files are tab-separated with original and translated text:
-```
-Hello world	Mirembe ensi
-How are you?	Oli otya?
-Good morning	Wasuze otya?
-```
-
-## Configuration
-
-You can modify these variables at the top of the script:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `RATE_LIMIT` | 0.5 | Seconds to wait between batches |
-| `BATCH_SIZE` | 30 | Number of phrases per batch |
-| `target` | 'lg' | Target language (lg = Luganda) |
-
-### Changing Target Language
-
-Modify this line in the script:
-```python
-translator = GoogleTranslator(source='auto', target='lg')  # Change 'lg' to your language code
-```
-
-Common language codes:
-- `es` - Spanish
-- `fr` - French
-- `de` - German
-- `zh` - Chinese
-- `ja` - Japanese
-- `lg` - Luganda
-
-## How It Works
-
-1. **Checks for existing output**: If a partial translation exists, it resumes from where it stopped
-2. **Reads input**: Loads all untranslated phrases from the input file
-3. **Batch translation**: Processes phrases in batches of 30 (default)
-4. **Rate limiting**: Pauses between batches to avoid detection
-5. **Appends results**: Writes translations to output file immediately after each batch
-6. **Error recovery**: If interrupted, simply re-run with the same ID to resume
-
-## Error Handling
-
-- **Network issues**: The script will stop with an error message; just re-run to resume
-- **IP blocking**: Increase `RATE_LIMIT` if you encounter blocking
-- **File not found**: Ensure the input file exists before running
 
 ## Notes
 
-- Google Translate has usage limits; consider increasing `RATE_LIMIT` for large files
-- The script creates the `translated` directory automatically if it doesn't exist
-- Uses UTF-8 encoding for full Unicode support
+- The script translates from `auto` (auto-detects source language) to `lg` (Luganda)
+- A small delay is added between batches to prevent IP blocking by Google Translate
+- If you need to change the target language, modify the `target='lg'` parameter in the script
+- The script creates the `translated_files` folder automatically if it doesn't exist
+
+## Troubleshooting
+
+**Error: `No module named 'deep_translator'`**  
+→ Make sure you've activated your virtual environment and run `pip install -r requirements.txt`
+
+**Translation stops midway**  
+→ Just run the same command again - the script will resume from where it stopped
+
+**IP blocked by Google**  
+→ Increase the `RATE_LIMIT` value in the script (e.g., change from 0.5 to 1.0 seconds)
 
 ## License
 
-Feel free to modify and distribute as needed.
+Feel free to use and modify as needed.
 ```
