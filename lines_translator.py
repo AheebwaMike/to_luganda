@@ -2,13 +2,27 @@ from deep_translator import GoogleTranslator
 from tqdm import tqdm
 import time
 import os
+import argparse
 
-os.makedirs('translated', exist_ok=True)
+os.path.makedirs("translated", exist_ok=True)
 
-INPUT_FILE_PATH = r'general_phrases_2.txt'
-OUTPUT_FILE_PATH = r'translated\general_phrases_2_translated.txt'
-START = 0
-name = 'file 2'
+parser = argparse.ArgumentParser(description='Parser for File Selection.')
+parser.add_argument("id", help="ID of the file to translate")
+args = parser.parse_args()
+
+ID = args.id
+INPUT_FILE_PATH = fr'split_files\general_phrases_{ID}.txt'
+OUTPUT_FILE_PATH = fr'split_files\translated\general_phrases_{ID}_translated.txt'
+
+if os.path.exists(OUTPUT_FILE_PATH):
+    with open(OUTPUT_FILE_PATH, 'r', encoding='UTF-8') as file:
+        lines = file.read().splitlines()
+        START = sum(1 for _ in lines)
+
+else:
+    START = 0
+
+name = f'file {ID}'
 
 RATE_LIMIT = 0.5
 BATCH_SIZE = 30
@@ -22,6 +36,8 @@ with open(INPUT_FILE_PATH, 'r', encoding='utf-8') as file:
 translated_phrases = 0
 batch_size = BATCH_SIZE
 
+
+print(f'\n🟢 Starting from line {START}')
 # 2. Translate in batches
 try:
     for i in tqdm(range(0, len(phrases), batch_size), desc=f'Translating batches: ({name})'):
@@ -37,9 +53,7 @@ try:
         # Small sleep to prevent IP blocking/rate limiting
         time.sleep(RATE_LIMIT)
 
-
 except Exception as e:
     print(f"\nAn error occurred: {e}")
-
 
 print(f"Done! Translated {translated_phrases} phrases.")
