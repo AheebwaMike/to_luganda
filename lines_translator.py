@@ -11,8 +11,8 @@ parser.add_argument("id", help="ID of the file to translate")
 args = parser.parse_args()
 
 ID = args.id
-INPUT_FILE_PATH = fr'files\general_phrases_{ID}.txt'
-OUTPUT_FILE_PATH = fr'translated\general_phrases_{ID}_translated.txt'
+INPUT_FILE_PATH = fr'raw_files\general_phrases_{ID}.txt'
+OUTPUT_FILE_PATH = fr'translated_files\general_phrases_{ID}_translated.txt'
 
 if os.path.exists(OUTPUT_FILE_PATH):
     with open(OUTPUT_FILE_PATH, 'r', encoding='UTF-8') as file:
