@@ -1,118 +1,119 @@
-# Lines Translator
+# Luganda Batch Processor
+Powered by *Google Translate*
 
-Eng - Luganda support tool.
+A Python script that translates text files in batches using Google Translate, with built-in resume capability and rate limiting to avoid IP blocks.
 
-## 📋 Prerequisites
+## Features
 
-- Python 3.7 or higher
-- Git (for cloning the repository)
+- **Batch Translation**: Translates phrases in configurable batches for efficiency
+- **Resume Support**: Automatically resumes from where it left off if interrupted
+- **Rate Limiting**: Built-in delays to prevent IP blocking by Google Translate
+- **Progress Tracking**: Visual progress bars using `tqdm`
+- **Luganda Support**: Default target language is Luganda (can be modified)
+- **Error Handling**: Gracefully handles errors and saves progress
 
-## 🚀 Getting Started
+## Prerequisites
 
-### 1. Clone the Repository
+- Python 3.6+
+- Required packages:
+  ```bash
+  pip install deep-translator tqdm
+  ```
 
-`bash
-git clone <your-repo-url>
-cd <repo-name>
-`
+## File Structure
 
-### 2. Create and Activate a Virtual Environment
+```
+project/
+├── split_files/
+│   ├── general_phrases_{ID}.txt      # Input files
+│   └── translated/                    # Output directory
+│       └── general_phrases_{ID}_translated.txt
+└── translate.py                       # This script
+```
 
-**Windows:**
-`bash
-python -m venv venv
-venv\Scripts\activate
-`
+## Usage
 
-### 3. Install Dependencies
+```bash
+python translate.py <ID>
+```
 
-`bash
-pip install -r requirements.txt
-`
+Where `<ID>` is the identifier of the file to translate.
 
-### 4. Run the Translator
+### Example
 
-`bash
-python lines_translator.py
-`
+```bash
+python translate.py 001
+```
 
-## 🔄 Handling Interruptions and Resuming
+This will:
+- Read from: `split_files/general_phrases_001.txt`
+- Write to: `split_files/translated/general_phrases_001_translated.txt`
 
-The translation process may take a long time depending on the file size. This tool includes checkpoint functionality to allow you to resume from where it stopped.
+## Input File Format
 
-### Important Workflow:
+Each input file should contain one phrase per line:
+```
+Hello world
+How are you?
+Good morning
+```
 
-1. **During execution**: The script displays a tqdm progress bar showing the current progress:
-   
-   `text
-   Translating: 45%|████▌     | 38/128 [00:30<00:37, 148.2 lines/s]
-   `
+## Output File Format
 
-2. **If the process stops** (due to error, network issues, or manual interruption):
-   - Open the output file (the translated file being created)
-   - Look at the **last successfully translated line number**
-   - Note this number
+Output files are tab-separated with original and translated text:
+```
+Hello world	Mirembe ensi
+How are you?	Oli otya?
+Good morning	Wasuze otya?
+```
 
-3. **Resume translation**:
-   - Open `lines_translator.py` in a text editor
-   - Locate the `START` variable (usually near the top of the file)
-   - Update it to the line number where the previous run stopped
-   
-   Example:
-   `python
-   # Before
-   START = 0  # Start from beginning
-   
-   # After (resuming from line 4500)
-   START = 4500  # Resume from line 4500
-   `
+## Configuration
 
-4. **Re-run the script**:
-   `bash
-   python lines_translator.py
-   `
-   
-## 👨‍💻 Author
+You can modify these variables at the top of the script:
 
-**Written by: Michael**
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `RATE_LIMIT` | 0.5 | Seconds to wait between batches |
+| `BATCH_SIZE` | 30 | Number of phrases per batch |
+| `target` | 'lg' | Target language (lg = Luganda) |
 
----
+### Changing Target Language
 
-For questions, suggestions, or issues, please feel free to reach out or submit an issue in the repository.
+Modify this line in the script:
+```python
+translator = GoogleTranslator(source='auto', target='lg')  # Change 'lg' to your language code
+```
 
-## 📄 License
+Common language codes:
+- `es` - Spanish
+- `fr` - French
+- `de` - German
+- `zh` - Chinese
+- `ja` - Japanese
+- `lg` - Luganda
 
-This project is open source and free to use. You are free to:
+## How It Works
 
-- Use this software for any purpose
-- Modify and adapt it to your needs
-- Distribute copies of the software
-- Use it commercially
+1. **Checks for existing output**: If a partial translation exists, it resumes from where it stopped
+2. **Reads input**: Loads all untranslated phrases from the input file
+3. **Batch translation**: Processes phrases in batches of 30 (default)
+4. **Rate limiting**: Pauses between batches to avoid detection
+5. **Appends results**: Writes translations to output file immediately after each batch
+6. **Error recovery**: If interrupted, simply re-run with the same ID to resume
 
-No warranty is provided, and the author assumes no liability for any issues that may arise from using this software.
+## Error Handling
 
-**This project is released under the MIT License.**
+- **Network issues**: The script will stop with an error message; just re-run to resume
+- **IP blocking**: Increase `RATE_LIMIT` if you encounter blocking
+- **File not found**: Ensure the input file exists before running
 
----
+## Notes
 
-The MIT License
+- Google Translate has usage limits; consider increasing `RATE_LIMIT` for large files
+- The script creates the `translated` directory automatically if it doesn't exist
+- Uses UTF-8 encoding for full Unicode support
 
-Copyright (c) 2026 Michael
+## License
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Feel free to modify and distribute as needed.
+```
