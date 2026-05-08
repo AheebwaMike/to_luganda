@@ -4,7 +4,7 @@ import time
 import os
 import argparse
 
-os.path.makedirs("translated", exist_ok=True)
+os.makedirs("translated", exist_ok=True)
 
 parser = argparse.ArgumentParser(description='Parser for File Selection.')
 parser.add_argument("id", help="ID of the file to translate")
